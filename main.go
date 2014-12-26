@@ -48,9 +48,12 @@ func main() {
 		}
 	})
 
+	tmp["category"] = str.TrimSpace(doc.Find(".category").First().Text())
+
 	for x, y := range tmp {
 		fmt.Printf("%s - %s\n", x, str.TrimSpace(y))
 	}
+
 }
 
 func PanicIf(err error) {
