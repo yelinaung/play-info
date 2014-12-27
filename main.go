@@ -45,14 +45,19 @@ func main() {
 			tmp["requiresAndroid"] = s.Find(".content").Text()
 		case "Content Rating":
 			tmp["contentRating"] = s.Find(".content").Text()
+		case "Developer":
+			// Ugly hack
+			firstSplit, _ := s.Find(".dev-link").Attr("href")
+			secondSplit := str.Split(firstSplit, "&")[0]
+			tmp["websiteURL"] = str.Split(secondSplit, "q=")[1]
 		}
 	})
 
 	tmp["category"] = str.TrimSpace(doc.Find(".category").First().Text())
 
-	for x, y := range tmp {
-		fmt.Printf("%s - %s\n", x, str.TrimSpace(y))
-	}
+	//	for x, y := range tmp {
+	//		fmt.Printf("%s - %s\n", x, str.TrimSpace(y))
+	//	}
 
 }
 
