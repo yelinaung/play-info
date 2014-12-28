@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	"os"
-	str "strings"
+	. "strings"
 )
 
 var baseString = "https://play.google.com/store/apps/details?id="
@@ -14,7 +14,7 @@ func main() {
 	// testPackage := "com.zwenexsys.yoteshin"
 
 	// Using with file
-	f, err := os.Open("ys.html")
+	f, err := os.Open("poweramp.html")
 	PanicIf(err)
 	defer f.Close()
 	doc, err := goquery.NewDocumentFromReader(f)
@@ -30,7 +30,7 @@ func main() {
 
 	tmp := make(map[string]string)
 	doc.Find(".meta-info").Each(func(i int, s *goquery.Selection) {
-		fieldName := str.TrimSpace(s.Find(".title").Text())
+		fieldName := TrimSpace(s.Find(".title").Text())
 		switch fieldName {
 		case "Updated":
 			tmp["updated"] = s.Find(".content").Text()
@@ -48,19 +48,23 @@ func main() {
 			// Ugly hack
 			s.Find(".dev-link").Each(func(i int, t *goquery.Selection) {
 				nodeHref, _ := t.Attr("href")
-				if str.Contains(nodeHref, "mailto:") {
-					tmp["email"] = str.Split(nodeHref, "mailto:")[1]
+				if Contains(nodeHref, "mailto:") {
+					tmp["email"] = Split(nodeHref, "mailto:")[1]
 				} else {
-					raw := str.Split(nodeHref, "&")[0]
-					tmp["websiteURL"] = str.Split(raw, "q=")[1]
+					raw := Split(nodeHref, "&")[0]
+					tmp["websiteURL"] = Split(raw, "q=")[1]
 				}
 			})
 		}
 	})
 
-	tmp["category"] = str.TrimSpace(doc.Find(".category").First().Text())
+	tmp["category"] = TrimSpace(doc.Find(".category").First().Text())
+	tmp["price"] = TrimSpace(doc.Find(".price").First().Text())
+
+	tmp["category"] = doc.Find(".category").First().Text()
+
 	for x, y := range tmp {
-		fmt.Printf("%s - %s\n", x, str.TrimSpace(y))
+		fmt.Printf("%s - %s\n", x, TrimSpace(y))
 	}
 
 }
