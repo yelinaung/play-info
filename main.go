@@ -29,7 +29,6 @@ func main() {
 	//	})
 
 	tmp := make(map[string]string)
-	// fmt.Println(doc.Find(".meta-info").First().Text())
 	doc.Find(".meta-info").Each(func(i int, s *goquery.Selection) {
 		fieldName := str.TrimSpace(s.Find(".title").Text())
 		switch fieldName {
@@ -47,17 +46,22 @@ func main() {
 			tmp["contentRating"] = s.Find(".content").Text()
 		case "Developer":
 			// Ugly hack
-			firstSplit, _ := s.Find(".dev-link").Attr("href")
-			secondSplit := str.Split(firstSplit, "&")[0]
-			tmp["websiteURL"] = str.Split(secondSplit, "q=")[1]
+			s.Find(".dev-link").Each(func(i int, t *goquery.Selection) {
+				nodeHref, _ := t.Attr("href")
+				if str.Contains(nodeHref, "mailto:") {
+					tmp["email"] = str.Split(nodeHref, "mailto:")[1]
+				} else {
+					raw := str.Split(nodeHref, "&")[0]
+					tmp["websiteURL"] = str.Split(raw, "q=")[1]
+				}
+			})
 		}
 	})
 
 	tmp["category"] = str.TrimSpace(doc.Find(".category").First().Text())
-
-	//	for x, y := range tmp {
-	//		fmt.Printf("%s - %s\n", x, str.TrimSpace(y))
-	//	}
+	for x, y := range tmp {
+		fmt.Printf("%s - %s\n", x, str.TrimSpace(y))
+	}
 
 }
 
