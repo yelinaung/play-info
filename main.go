@@ -18,7 +18,12 @@ func main() {
 	app.Version = "0.1.0"
 
 	app.Action = func(c *cli.Context) {
-		GetData(c.Args()[0])
+		arg := c.Args()
+		if len(arg) == 0 {
+			println("Error", "Enter package name")
+		} else {
+			GetData(c.Args()[0])
+		}
 	}
 
 	app.Run(os.Args)
