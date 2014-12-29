@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
+	"github.com/codegangsta/cli"
 	"os"
 	. "strings"
 )
@@ -11,22 +12,27 @@ var baseString = "https://play.google.com/store/apps/details?id="
 
 func main() {
 
-	// testPackage := "com.zwenexsys.yoteshin"
+	app := cli.NewApp()
+	app.Name = "Play Go"
+	app.Usage = "Get app info via commandline"
+	app.Version = "0.1.0"
 
+	app.Action = func(c *cli.Context) {
+		GetData(c.Args()[0])
+	}
+
+	app.Run(os.Args)
+
+}
+
+func GetData(pkgName string) {
 	// Using with file
-	f, err := os.Open("poweramp.html")
+	// f, err := os.Open("poweramp.html")
+	// PanicIf(err)
+	// defer f.Close()
+	// doc, err := goquery.NewDocumentFromReader(f)
+	doc, err := goquery.NewDocument(fmt.Sprintf("%s%s", baseString, pkgName))
 	PanicIf(err)
-	defer f.Close()
-	doc, err := goquery.NewDocumentFromReader(f)
-	// doc, err := goquery.NewDocument(fmt.Sprintf("%s%s", baseString, testPackage))
-	PanicIf(err)
-
-	//	doc.Find(".main-content").Each(func(i int, s *goquery.Selection) {
-	//		title := s.Find(".document-title").Text()
-	//		desc := s.Find(".id-app-orig-desc").Text()
-	//		fmt.Printf("%s - %s", title, desc)
-	//
-	//	})
 
 	tmp := make(map[string]string)
 	doc.Find(".meta-info").Each(func(i int, s *goquery.Selection) {
@@ -61,7 +67,7 @@ func main() {
 	tmp["category"] = TrimSpace(doc.Find(".category").First().Text())
 	tmp["price"] = TrimSpace(doc.Find(".price").First().Text())
 	tmp["category"] = doc.Find(".category").First().Text()
-	// tmp["description"] = doc.Find(`div[itemprop='description']`).First().Text()
+	tmp["description"] = doc.Find(`div[itemprop='description']`).First().Text()
 	tmp["title"] = doc.Find(`div[itemprop='name']`).First().Text()
 
 	score := doc.Find(".score-container").First()
@@ -78,7 +84,6 @@ func main() {
 	for x, y := range tmp {
 		fmt.Printf("%s - %s\n", x, TrimSpace(y))
 	}
-
 }
 
 func PanicIf(err error) {
