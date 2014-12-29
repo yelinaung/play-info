@@ -64,6 +64,17 @@ func main() {
 	// tmp["description"] = doc.Find(`div[itemprop='description']`).First().Text()
 	tmp["title"] = doc.Find(`div[itemprop='name']`).First().Text()
 
+	score := doc.Find(".score-container").First()
+	if score != nil {
+		tmp["score"] = score.Find(".score").First().Text()
+		node := doc.Find(`meta[itemprop='ratingCount']`)
+		v, _ := node.Attr("content")
+		tmp["votes"] = v
+	}
+
+	tmp["developer"] = TrimSpace((doc.Find(`div[itemprop='author']`).Find(".primary").Text()))
+	tmp["whatsNew"] = doc.Find(".whatsnew .recent-change").Text()
+
 	for x, y := range tmp {
 		fmt.Printf("%s - %s\n", x, TrimSpace(y))
 	}
