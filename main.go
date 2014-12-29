@@ -60,8 +60,9 @@ func main() {
 
 	tmp["category"] = TrimSpace(doc.Find(".category").First().Text())
 	tmp["price"] = TrimSpace(doc.Find(".price").First().Text())
-
 	tmp["category"] = doc.Find(".category").First().Text()
+	// tmp["description"] = doc.Find(`div[itemprop='description']`).First().Text()
+	tmp["title"] = doc.Find(`div[itemprop='name']`).First().Text()
 
 	for x, y := range tmp {
 		fmt.Printf("%s - %s\n", x, TrimSpace(y))
