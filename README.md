@@ -1,7 +1,7 @@
 Play-Go
 =======
 
-(WIP) Get app info via commandline
+(WIP) Get app info via cmd
 
 
 How to Use
