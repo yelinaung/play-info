@@ -20,7 +20,7 @@ func main() {
 	app.Action = func(c *cli.Context) {
 		arg := c.Args()
 		if len(arg) == 0 {
-			println("Error", "Enter package name")
+			println("Error : ", "Please enter package name")
 		} else {
 			GetData(c.Args()[0])
 		}
