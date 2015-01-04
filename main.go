@@ -46,45 +46,44 @@ func GetData(pkgName string) {
 		case "Updated":
 			tmp["updated"] = s.Find(".content").Text()
 		case "Installs":
-			tmp["installs"] = s.Find(".content").Text()
+			tmp["Total Installs"] = s.Find(".content").Text()
 		case "Size":
-			tmp["size"] = s.Find(".content").Text()
+			tmp["Size"] = s.Find(".content").Text()
 		case "Current Version":
-			tmp["currentVersion"] = s.Find(".content").Text()
+			tmp["Current Version"] = s.Find(".content").Text()
 		case "Requires Android":
-			tmp["requiresAndroid"] = s.Find(".content").Text()
+			tmp["Requires Android"] = s.Find(".content").Text()
 		case "Content Rating":
-			tmp["contentRating"] = s.Find(".content").Text()
+			tmp["Content Rating"] = s.Find(".content").Text()
 		case "Developer":
 			// Ugly hack
 			s.Find(".dev-link").Each(func(i int, t *goquery.Selection) {
 				nodeHref, _ := t.Attr("href")
 				if Contains(nodeHref, "mailto:") {
-					tmp["email"] = Split(nodeHref, "mailto:")[1]
+					tmp["Email"] = Split(nodeHref, "mailto:")[1]
 				} else {
 					raw := Split(nodeHref, "&")[0]
-					tmp["websiteURL"] = Split(raw, "q=")[1]
+					tmp["Website"] = Split(raw, "q=")[1]
 				}
 			})
 		}
 	})
 
-	tmp["category"] = TrimSpace(doc.Find(".category").First().Text())
-	tmp["price"] = TrimSpace(doc.Find(".price").First().Text())
-	tmp["category"] = doc.Find(".category").First().Text()
-	tmp["description"] = doc.Find(`div[itemprop='description']`).First().Text()
-	tmp["title"] = doc.Find(`div[itemprop='name']`).First().Text()
+	tmp["Category"] = TrimSpace(doc.Find(".category").First().Text())
+	tmp["Price"] = TrimSpace(doc.Find(".price").First().Text())
+	tmp["Description"] = doc.Find(`div[itemprop='description']`).First().Text()
+	tmp["Title"] = doc.Find(`div[itemprop='name']`).First().Text()
 
 	score := doc.Find(".score-container").First()
 	if score != nil {
-		tmp["score"] = score.Find(".score").First().Text()
+		tmp["Score"] = score.Find(".score").First().Text()
 		node := doc.Find(`meta[itemprop='ratingCount']`)
 		v, _ := node.Attr("content")
-		tmp["votes"] = v
+		tmp["Votes"] = v
 	}
 
-	tmp["developer"] = TrimSpace((doc.Find(`div[itemprop='author']`).Find(".primary").Text()))
-	tmp["whatsNew"] = doc.Find(".whatsnew .recent-change").Text()
+	tmp["Developer"] = TrimSpace((doc.Find(`div[itemprop='author']`).Find(".primary").Text()))
+	tmp["What's New"] = doc.Find(".whatsnew .recent-change").Text()
 
 	for x, y := range tmp {
 		fmt.Printf("%s - %s\n", x, TrimSpace(y))
