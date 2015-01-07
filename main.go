@@ -22,6 +22,9 @@ func main() {
 		if len(arg) == 0 {
 			println("Error : ", "Please enter package name")
 		} else {
+			pkg := c.Args()[0]
+			fmt.Printf("Processing Results for %s\n", pkg)
+			fmt.Println(Repeat("-", 65))
 			GetData(c.Args()[0])
 		}
 	}
