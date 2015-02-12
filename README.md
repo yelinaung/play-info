@@ -11,7 +11,7 @@ How to Use
 ```bash
 $ go get github.com/yelinaung/play-go
 $ cd $GOPATH/src/github.com/yelinaung/play-go
-$ go run main.go com.zwenexsys.yoteshin
+$ go run main.go com.yelinaung.programmerexcuses
 ```
 
 License

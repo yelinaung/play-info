@@ -11,7 +11,7 @@ import (
 
 var baseString = "https://play.google.com/store/apps/details?id="
 
-var divider = fmt.Sprintf(ansi.Color(Repeat("-", 56)+"\n", "grey"))
+var divider = fmt.Sprintf(ansi.Color(Repeat("-", 56)+"\n", "yellow"))
 
 func main() {
 	app := cli.NewApp()
@@ -27,11 +27,11 @@ func main() {
 			pkg := c.Args()[0]
 			fmt.Printf(ansi.Color("Processing Results for \"%s\"\n", "green"), pkg)
 			fmt.Println("\n")
-			fmt.Println(Repeat("-", 56))
+			fmt.Println(divider)
 			fmt.Println("\n")
 			GetData(c.Args()[0])
 			fmt.Println("\n")
-			fmt.Println(Repeat("-", 56))
+			fmt.Println(divider)
 		}
 	}
 
@@ -51,7 +51,14 @@ func GetData(pkgName string) {
 
 	tmp["Title"] = doc.Find(`div[itemprop='name']`).First().Text()
 	tmp["Category"] = TrimSpace(doc.Find(".category").First().Text())
-	tmp["Price"] = TrimSpace(doc.Find(".price").First().Text())
+
+	price := TrimSpace(doc.Find(".price").First().Text())
+	if price == "Install" {
+		tmp["Price"] = "Free"
+	} else {
+		tmp["Price"] = TrimSpace(doc.Find(".price").First().Text())
+	}
+
 	tmp["Description"] = doc.Find(`div[itemprop='description']`).First().Text()
 
 	doc.Find(".meta-info").Each(func(i int, s *goquery.Selection) {
