@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/codegangsta/cli"
+	"github.com/mgutz/ansi"
 	"os"
+
 	. "strings"
 )
 
@@ -20,10 +22,10 @@ func main() {
 	app.Action = func(c *cli.Context) {
 		arg := c.Args()
 		if len(arg) == 0 {
-			println("Error : ", "Please enter package name")
+			fmt.Println(ansi.Color("Error : Please enter package name", "red"))
 		} else {
 			pkg := c.Args()[0]
-			fmt.Printf("Processing Results for %s\n", pkg)
+			fmt.Printf(ansi.Color("Processing Results for \"%s\"\n", "green"), pkg)
 			fmt.Println(Repeat("-", 65))
 			GetData(c.Args()[0])
 		}
