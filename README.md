@@ -3,6 +3,8 @@ Play-Go
 
 (WIP) Get app info via cmd
 
+![Screenshot](https://raw.githubusercontent.com/yelinaung/play-info/master/play-info-screenshot.png)
+
 
 How to Use
 ----------
