@@ -6,14 +6,14 @@ import (
 	"github.com/codegangsta/cli"
 	"github.com/mgutz/ansi"
 	"os"
-
 	. "strings"
 )
 
 var baseString = "https://play.google.com/store/apps/details?id="
 
-func main() {
+var divider = fmt.Sprintf(ansi.Color(Repeat("-", 56)+"\n", "grey"))
 
+func main() {
 	app := cli.NewApp()
 	app.Name = "Play Go"
 	app.Usage = "Get app info via commandline"
@@ -26,13 +26,16 @@ func main() {
 		} else {
 			pkg := c.Args()[0]
 			fmt.Printf(ansi.Color("Processing Results for \"%s\"\n", "green"), pkg)
-			fmt.Println(Repeat("-", 65))
+			fmt.Println("\n")
+			fmt.Println(Repeat("-", 56))
+			fmt.Println("\n")
 			GetData(c.Args()[0])
+			fmt.Println("\n")
+			fmt.Println(Repeat("-", 56))
 		}
 	}
 
 	app.Run(os.Args)
-
 }
 
 func GetData(pkgName string) {
@@ -91,8 +94,24 @@ func GetData(pkgName string) {
 	tmp["What's New"] = doc.Find(".whatsnew .recent-change").Text()
 
 	for x, y := range tmp {
-		fmt.Printf("%s - %s\n", x, TrimSpace(y))
+		var rows string
+		rows = fmt.Sprintf("%s %s | %s\n", x, buffer(x, 11), TrimSpace(y))
+		fmt.Printf(rows)
 	}
+}
+
+func buffer(msg string, length int) string {
+	var ret = ""
+
+	length = 44
+
+	length = length - len(msg) - 1
+
+	if length > 0 {
+		ret = Repeat(" ", length)
+	}
+
+	return ret
 }
 
 func PanicIf(err error) {
