@@ -100,6 +100,7 @@ func GetData(pkgName string) {
 	}
 }
 
+// I copied it from https://github.com/addyosmani/psi/blob/master/lib%2Futils.js#L36-L50
 func buffer(msg string, length int) string {
 	var ret = ""
 
