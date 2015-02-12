@@ -48,6 +48,12 @@ func GetData(pkgName string) {
 	PanicIf(err)
 
 	tmp := make(map[string]string)
+
+	tmp["Title"] = doc.Find(`div[itemprop='name']`).First().Text()
+	tmp["Category"] = TrimSpace(doc.Find(".category").First().Text())
+	tmp["Price"] = TrimSpace(doc.Find(".price").First().Text())
+	tmp["Description"] = doc.Find(`div[itemprop='description']`).First().Text()
+
 	doc.Find(".meta-info").Each(func(i int, s *goquery.Selection) {
 		fieldName := TrimSpace(s.Find(".title").Text())
 		switch fieldName {
@@ -76,11 +82,6 @@ func GetData(pkgName string) {
 			})
 		}
 	})
-
-	tmp["Category"] = TrimSpace(doc.Find(".category").First().Text())
-	tmp["Price"] = TrimSpace(doc.Find(".price").First().Text())
-	tmp["Description"] = doc.Find(`div[itemprop='description']`).First().Text()
-	tmp["Title"] = doc.Find(`div[itemprop='name']`).First().Text()
 
 	score := doc.Find(".score-container").First()
 	if score != nil {
