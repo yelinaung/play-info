@@ -65,7 +65,7 @@ func GetData(pkgName string) {
 		fieldName := TrimSpace(s.Find(".title").Text())
 		switch fieldName {
 		case "Updated":
-			tmp["updated"] = s.Find(".content").Text()
+			tmp["Updated"] = s.Find(".content").Text()
 		case "Installs":
 			tmp["Total Installs"] = s.Find(".content").Text()
 		case "Size":
