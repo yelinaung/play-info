@@ -101,6 +101,7 @@ func GetData(pkgName string) {
 	tmp[TitleMap{15, "What's New"}] = doc.Find(".whatsnew .recent-change").Text()
 
 	tmp[TitleMap{16, "Description"}] = doc.Find(`div[itemprop='description']`).First().Text()
+
 	// Go iteration order is randomzies
 	// https://blog.golang.org/go-maps-in-action#TOC_7.
 
@@ -117,19 +118,13 @@ func GetData(pkgName string) {
 		rows = fmt.Sprintf("%s %s | %s\n", k.Title, buffer(k.Title, 11), TrimSpace(tmp[k]))
 		fmt.Printf(rows)
 	}
-
-	//	for names, values := range tmp {
-	//		var rows string
-	//		rows = fmt.Sprintf("%s %s | %s\n", names.Title, buffer(names.Title, 11), TrimSpace(values))
-	//		fmt.Printf(rows)
-	//	}
 }
 
 // I copied it from https://github.com/addyosmani/psi/blob/master/lib%2Futils.js#L36-L50
 func buffer(msg string, length int) string {
 	var ret = ""
 
-	length = 44
+	length = 24
 
 	length = length - len(msg) - 1
 
