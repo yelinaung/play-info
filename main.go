@@ -6,6 +6,7 @@ import (
 	"github.com/codegangsta/cli"
 	"github.com/mgutz/ansi"
 	"os"
+	"sort"
 	. "strings"
 )
 
@@ -47,44 +48,42 @@ func GetData(pkgName string) {
 	doc, err := goquery.NewDocument(fmt.Sprintf("%s%s", baseString, pkgName))
 	PanicIf(err)
 
-	tmp := make(map[string]string)
+	tmp := make(map[TitleMap]string)
 
-	tmp["Title"] = doc.Find(`div[itemprop='name']`).First().Text()
-	tmp["Category"] = TrimSpace(doc.Find(".category").First().Text())
+	tmp[TitleMap{1, "Title"}] = doc.Find(`div[itemprop='name']`).First().Text()
+	tmp[TitleMap{2, "Category"}] = TrimSpace(doc.Find(".category").First().Text())
 
 	price := TrimSpace(doc.Find(".price").First().Text())
 	if price == "Install" {
-		tmp["Price"] = "Free"
+		tmp[TitleMap{3, "Price"}] = "Free"
 	} else {
-		tmp["Price"] = TrimSpace(doc.Find(".price").First().Text())
+		tmp[TitleMap{3, "Price"}] = TrimSpace(doc.Find(".price").First().Text())
 	}
-
-	tmp["Description"] = doc.Find(`div[itemprop='description']`).First().Text()
 
 	doc.Find(".meta-info").Each(func(i int, s *goquery.Selection) {
 		fieldName := TrimSpace(s.Find(".title").Text())
 		switch fieldName {
 		case "Updated":
-			tmp["Updated"] = s.Find(".content").Text()
+			tmp[TitleMap{4, "Updated"}] = s.Find(".content").Text()
 		case "Installs":
-			tmp["Total Installs"] = s.Find(".content").Text()
+			tmp[TitleMap{5, "Total Installs"}] = s.Find(".content").Text()
 		case "Size":
-			tmp["Size"] = s.Find(".content").Text()
+			tmp[TitleMap{6, "Size"}] = s.Find(".content").Text()
 		case "Current Version":
-			tmp["Current Version"] = s.Find(".content").Text()
+			tmp[TitleMap{7, "Current Version"}] = s.Find(".content").Text()
 		case "Requires Android":
-			tmp["Requires Android"] = s.Find(".content").Text()
+			tmp[TitleMap{8, "Requires Android"}] = s.Find(".content").Text()
 		case "Content Rating":
-			tmp["Content Rating"] = s.Find(".content").Text()
+			tmp[TitleMap{9, "Content Rating"}] = s.Find(".content").Text()
 		case "Developer":
 			// Ugly hack
 			s.Find(".dev-link").Each(func(i int, t *goquery.Selection) {
 				nodeHref, _ := t.Attr("href")
 				if Contains(nodeHref, "mailto:") {
-					tmp["Email"] = Split(nodeHref, "mailto:")[1]
+					tmp[TitleMap{10, "Email"}] = Split(nodeHref, "mailto:")[1]
 				} else {
 					raw := Split(nodeHref, "&")[0]
-					tmp["Website"] = Split(raw, "q=")[1]
+					tmp[TitleMap{11, "Website"}] = Split(raw, "q=")[1]
 				}
 			})
 		}
@@ -92,20 +91,38 @@ func GetData(pkgName string) {
 
 	score := doc.Find(".score-container").First()
 	if score != nil {
-		tmp["Score"] = score.Find(".score").First().Text()
+		tmp[TitleMap{12, "Score"}] = score.Find(".score").First().Text()
 		node := doc.Find(`meta[itemprop='ratingCount']`)
 		v, _ := node.Attr("content")
-		tmp["Votes"] = v
+		tmp[TitleMap{13, "Votes"}] = v
 	}
 
-	tmp["Developer"] = TrimSpace((doc.Find(`div[itemprop='author']`).Find(".primary").Text()))
-	tmp["What's New"] = doc.Find(".whatsnew .recent-change").Text()
+	tmp[TitleMap{14, "Developer"}] = TrimSpace((doc.Find(`div[itemprop='author']`).Find(".primary").Text()))
+	tmp[TitleMap{15, "What's New"}] = doc.Find(".whatsnew .recent-change").Text()
 
-	for x, y := range tmp {
+	tmp[TitleMap{16, "Description"}] = doc.Find(`div[itemprop='description']`).First().Text()
+	// Go iteration order is randomzies
+	// https://blog.golang.org/go-maps-in-action#TOC_7.
+
+	var keys ByIndex
+	for k := range tmp {
+		keys = append(keys, k)
+	}
+
+	// sort the keys
+	sort.Sort(keys)
+
+	for _, k := range keys {
 		var rows string
-		rows = fmt.Sprintf("%s %s | %s\n", x, buffer(x, 11), TrimSpace(y))
+		rows = fmt.Sprintf("%s %s | %s\n", k.Title, buffer(k.Title, 11), TrimSpace(tmp[k]))
 		fmt.Printf(rows)
 	}
+
+	//	for names, values := range tmp {
+	//		var rows string
+	//		rows = fmt.Sprintf("%s %s | %s\n", names.Title, buffer(names.Title, 11), TrimSpace(values))
+	//		fmt.Printf(rows)
+	//	}
 }
 
 // I copied it from https://github.com/addyosmani/psi/blob/master/lib%2Futils.js#L36-L50
@@ -123,8 +140,19 @@ func buffer(msg string, length int) string {
 	return ret
 }
 
+type ByIndex []TitleMap
+
+func (a ByIndex) Len() int           { return len(a) }
+func (a ByIndex) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a ByIndex) Less(i, j int) bool { return a[i].Index < a[j].Index }
+
 func PanicIf(err error) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+type TitleMap struct {
+	Index int
+	Title string
 }
