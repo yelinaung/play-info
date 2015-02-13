@@ -11,8 +11,8 @@ How to Use
 ----------
 ```bash
 $ go get github.com/yelinaung/play-go
-$ cd $GOPATH/src/github.com/yelinaung/play-go
-$ go run main.go "com.yelinaung.programmerexcuses"
+$ cd $GOPATH/src/github.com/yelinaung/play-info
+$ go run play-info.go "com.yelinaung.programmerexcuses"
 ```
 
 License
