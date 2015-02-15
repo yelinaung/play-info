@@ -1,7 +1,7 @@
 play-info
 =========
 
-(WIP) Get app info via cmd.
+(WIP) Get a Play Store app info via cmd.
 Inspired by awesome [market_bot gem](https://github.com/chadrem/market_bot) and [psi](https://github.com/addyosmani/psi) style command line results.
 
 ![Screenshot](https://raw.githubusercontent.com/yelinaung/play-info/master/play-info-screenshot.png)
