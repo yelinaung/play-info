@@ -21,6 +21,12 @@ $ cd $GOPATH/src/github.com/yelinaung/play-info
 $ go run play-info.go "com.yelinaung.programmerexcuses"
 ```
 
+TODO
+-----
+
+- [ ] Homebrew formula
+- [ ] Fuzzy Search. e.g `gmail`
+
 License
 -------
 MIT
