@@ -41,12 +41,12 @@ func main() {
 
 func GetData(pkgName string) {
 	// Using with file
-	// f, err := os.Open("poweramp.html")
-	// PanicIf(err)
-	// defer f.Close()
-	// doc, err := goquery.NewDocumentFromReader(f)
-	doc, err := goquery.NewDocument(fmt.Sprintf("%s%s", baseString, pkgName))
+	f, err := os.Open("karrency.html")
 	PanicIf(err)
+	defer f.Close()
+	doc, err := goquery.NewDocumentFromReader(f)
+	// doc, err := goquery.NewDocument(fmt.Sprintf("%s%s", baseString, pkgName))
+	// PanicIf(err)
 
 	tmp := make(map[TitleMap]string)
 
