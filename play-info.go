@@ -27,9 +27,7 @@ func main() {
 		} else {
 			pkg := c.Args()[0]
 			fmt.Printf(ansi.Color("Processing Results for \"%s\"\n", "green"), pkg)
-			fmt.Println("\n")
 			fmt.Println(divider)
-			fmt.Println("\n")
 			GetData(c.Args()[0])
 			fmt.Println("\n")
 			fmt.Println(divider)
@@ -45,6 +43,7 @@ func GetData(pkgName string) {
 	PanicIf(err)
 	defer f.Close()
 	doc, err := goquery.NewDocumentFromReader(f)
+
 	// doc, err := goquery.NewDocument(fmt.Sprintf("%s%s", baseString, pkgName))
 	// PanicIf(err)
 
