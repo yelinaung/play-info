@@ -115,6 +115,7 @@ func GetData(pkgName string) {
 	// https://blog.golang.org/go-maps-in-action#TOC_7.
 
 	var keys ByIndex
+
 	for k := range tmp {
 		keys = append(keys, k)
 	}
