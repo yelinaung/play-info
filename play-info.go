@@ -13,7 +13,7 @@ import (
 var baseString = "https://play.google.com/store/apps/details?id="
 
 // for my own
-const debug = false
+const debug = true
 
 var divider = fmt.Sprintf(ansi.Color(Repeat("-", 56)+"\n", "yellow"))
 
@@ -46,7 +46,7 @@ func GetData(pkgName string) {
 	var doc *goquery.Document
 	var err error
 	if debug {
-		f, err := os.Open("karrency.html")
+		f, err := os.Open("yoteshin.html")
 		PanicIf(err)
 		defer f.Close()
 		doc, err = goquery.NewDocumentFromReader(f)
@@ -126,17 +126,15 @@ func GetData(pkgName string) {
 
 	for _, k := range keys {
 		var rows string
-		rows = fmt.Sprintf("%s %s | %s\n", k.Title, buffer(k.Title, 11), TrimSpace(tmp[k]))
+		rows = fmt.Sprintf("%s %s | %s\n", k.Title, buffer(k.Title), TrimSpace(tmp[k]))
 		fmt.Printf(rows)
 	}
 }
 
 // I copied it from https://github.com/addyosmani/psi/blob/master/lib%2Futils.js#L36-L50
-func buffer(msg string, length int) string {
+func buffer(msg string) string {
 	var ret = ""
-
-	length = 24
-
+	length := 20
 	length = length - len(msg) - 1
 
 	if length > 0 {
