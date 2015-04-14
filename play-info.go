@@ -13,7 +13,7 @@ import (
 var baseString = "https://play.google.com/store/apps/details?id="
 
 // for my own
-const debug = true
+const debug = false
 
 var divider = fmt.Sprintf(ansi.Color(Repeat("-", 56)+"\n", "yellow"))
 
@@ -140,6 +140,13 @@ func GetData(pkgName string) {
 		}
 	})
 
+	doc.Find(".play-action-container").Each(func(i int, node *goquery.Selection) {
+		url, _ := node.Attr("data-video-url")
+		if len(url) > 0 {
+			tmp[TitleMap{23, "YouTube Url"}] = url
+		}
+	})
+
 	// Go iteration order is randomzies
 	// https://blog.golang.org/go-maps-in-action#TOC_7.
 
@@ -152,11 +159,11 @@ func GetData(pkgName string) {
 	// sort the keys
 	sort.Sort(keys)
 
-	// for _, k := range keys {
-	// 	var rows string
-	// 	rows = fmt.Sprintf("%s %s | %s\n", k.Title, buffer(k.Title), TrimSpace(tmp[k]))
-	// 	fmt.Printf(rows)
-	// }
+	for _, k := range keys {
+		var rows string
+		rows = fmt.Sprintf("%s %s | %s\n", k.Title, buffer(k.Title), TrimSpace(tmp[k]))
+		fmt.Printf(rows)
+	}
 }
 
 func marketUrl(pkgName string) string {
