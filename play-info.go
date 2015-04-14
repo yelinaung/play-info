@@ -119,9 +119,10 @@ func GetData(pkgName string) {
 		imgSlice = append(imgSlice, fsLinks)
 	})
 	for _, imgSliceLinks := range imgSlice {
-		tmp[TitleMap{18, "Full Screenshot"}] += fmt.Sprintf("%s\n", imgSliceLinks)
+		tmp[TitleMap{19, "Full Screenshot"}] += fmt.Sprintf("%s\n", imgSliceLinks)
 	}
 
+	tmp[TitleMap{20, "Market Url"}] = marketUrl(pkgName)
 	// Go iteration order is randomzies
 	// https://blog.golang.org/go-maps-in-action#TOC_7.
 
@@ -139,6 +140,10 @@ func GetData(pkgName string) {
 		rows = fmt.Sprintf("%s %s | %s\n", k.Title, buffer(k.Title), TrimSpace(tmp[k]))
 		fmt.Printf(rows)
 	}
+}
+
+func marketUrl(pkgName string) string {
+	return fmt.Sprintf("%s%s&hl=en", baseString, pkgName)
 }
 
 // I copied it from https://github.com/addyosmani/psi/blob/master/lib%2Futils.js#L36-L50
