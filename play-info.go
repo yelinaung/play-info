@@ -112,6 +112,16 @@ func GetData(pkgName string) {
 	tmp[TitleMap{17, "App Id"}] = pkgName
 	tmp[TitleMap{18, "Icon Url"}], _ = doc.Find(".cover-image").Attr("src")
 
+	// Should we make slice or just an string ?
+	imgSlice := make([]string, 0)
+	doc.Find(".full-screenshot").Each(func(i int, s *goquery.Selection) {
+		fsLinks, _ := s.Attr("src")
+		imgSlice = append(imgSlice, fsLinks)
+	})
+	for _, imgSliceLinks := range imgSlice {
+		tmp[TitleMap{18, "Full Screenshot"}] += fmt.Sprintf("%s\n", imgSliceLinks)
+	}
+
 	// Go iteration order is randomzies
 	// https://blog.golang.org/go-maps-in-action#TOC_7.
 
@@ -134,7 +144,7 @@ func GetData(pkgName string) {
 // I copied it from https://github.com/addyosmani/psi/blob/master/lib%2Futils.js#L36-L50
 func buffer(msg string) string {
 	var ret = ""
-	length := 20
+	length := 24
 	length = length - len(msg) - 1
 
 	if length > 0 {
