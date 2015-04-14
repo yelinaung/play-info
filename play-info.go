@@ -29,12 +29,12 @@ func main() {
 		if len(arg) == 0 {
 			fmt.Println(ansi.Color("Error : Please enter package name", "red"))
 		} else {
-			fmt.Println("\n")
+			fmt.Println("")
 			pkg := c.Args()[0]
 			fmt.Printf(ansi.Color("Processing Results for \"%s\"\n", "green"), pkg)
 			fmt.Println(divider)
 			getData(c.Args()[0])
-			fmt.Println("\n")
+			fmt.Println("")
 			fmt.Println(divider)
 		}
 	}
