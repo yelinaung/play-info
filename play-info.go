@@ -7,16 +7,16 @@ import (
 	"github.com/mgutz/ansi"
 	"os"
 	"sort"
-	. "strings"
+	str "strings"
 )
 
 var baseString = "https://play.google.com/store/apps/details?id="
-var baseYouTubeUrl = "https://www.youtube.com/watch?v="
+var baseYouTubeURL = "https://www.youtube.com/watch?v="
 
 // for my own
 const debug = false
 
-var divider = fmt.Sprintf(ansi.Color(Repeat("-", 56)+"\n", "yellow"))
+var divider = fmt.Sprintf(ansi.Color(str.Repeat("-", 56)+"\n", "yellow"))
 
 func main() {
 	app := cli.NewApp()
@@ -33,7 +33,7 @@ func main() {
 			pkg := c.Args()[0]
 			fmt.Printf(ansi.Color("Processing Results for \"%s\"\n", "green"), pkg)
 			fmt.Println(divider)
-			GetData(c.Args()[0])
+			getData(c.Args()[0])
 			fmt.Println("\n")
 			fmt.Println(divider)
 		}
@@ -42,56 +42,56 @@ func main() {
 	app.Run(os.Args)
 }
 
-func GetData(pkgName string) {
+func getData(pkgName string) {
 	// Using with file
 	var doc *goquery.Document
 	var err error
 	if debug {
 		f, err := os.Open("yoteshin.html")
-		PanicIf(err)
+		panicIf(err)
 		defer f.Close()
 		doc, err = goquery.NewDocumentFromReader(f)
 	} else {
 		doc, err = goquery.NewDocument(fmt.Sprintf("%s%s", baseString, pkgName))
-		PanicIf(err)
+		panicIf(err)
 	}
 
 	tmp := make(map[TitleMap]string)
 
 	tmp[TitleMap{1, "Title"}] = doc.Find(`div[itemprop='name']`).First().Text()
-	tmp[TitleMap{2, "Category"}] = TrimSpace(doc.Find(".category").First().Text())
+	tmp[TitleMap{2, "Category"}] = str.TrimSpace(doc.Find(".category").First().Text())
 
-	price := TrimSpace(doc.Find(".price").First().Text())
+	price := str.TrimSpace(doc.Find(".price").First().Text())
 	if price == "Install" {
 		tmp[TitleMap{3, "Price"}] = "Free"
 	} else {
-		tmp[TitleMap{3, "Price"}] = TrimSpace(doc.Find(".price").First().Text())
+		tmp[titleMap{3, "Price"}] = str.TrimSpace(doc.Find(".price").First().Text())
 	}
 
 	doc.Find(".meta-info").Each(func(i int, s *goquery.Selection) {
-		fieldName := TrimSpace(s.Find(".title").Text())
+		fieldName := str.TrimSpace(s.Find(".title").Text())
 		switch fieldName {
 		case "Updated":
-			tmp[TitleMap{4, "Updated"}] = s.Find(".content").Text()
+			tmp[titleMap{4, "Updated"}] = s.Find(".content").Text()
 		case "Installs":
-			tmp[TitleMap{5, "Total Installs"}] = s.Find(".content").Text()
+			tmp[titleMap{5, "Total Installs"}] = s.Find(".content").Text()
 		case "Size":
-			tmp[TitleMap{6, "Size"}] = s.Find(".content").Text()
+			tmp[titleMap{6, "Size"}] = s.Find(".content").Text()
 		case "Current Version":
-			tmp[TitleMap{7, "Current Version"}] = s.Find(".content").Text()
+			tmp[titleMap{7, "Current Version"}] = s.Find(".content").Text()
 		case "Requires Android":
-			tmp[TitleMap{8, "Requires Android"}] = s.Find(".content").Text()
+			tmp[titleMap{8, "Requires Android"}] = s.Find(".content").Text()
 		case "Content Rating":
-			tmp[TitleMap{9, "Content Rating"}] = s.Find(".content").Text()
+			tmp[titleMap{9, "Content Rating"}] = s.Find(".content").Text()
 		case "Developer":
 			// Ugly hack
 			s.Find(".dev-link").Each(func(i int, t *goquery.Selection) {
 				nodeHref, _ := t.Attr("href")
-				if Contains(nodeHref, "mailto:") {
-					tmp[TitleMap{10, "Email"}] = Split(nodeHref, "mailto:")[1]
+				if str.Contains(nodeHref, "mailto:") {
+					tmp[titleMap{10, "Email"}] = str.Split(nodeHref, "mailto:")[1]
 				} else {
-					raw := Split(nodeHref, "&")[0]
-					tmp[TitleMap{11, "Website"}] = Split(raw, "q=")[1]
+					raw := str.Split(nodeHref, "&")[0]
+					tmp[titleMap{11, "Website"}] = str.Split(raw, "q=")[1]
 				}
 			})
 		}
@@ -99,53 +99,53 @@ func GetData(pkgName string) {
 
 	score := doc.Find(".score-container").First()
 	if score != nil {
-		tmp[TitleMap{12, "Score"}] = score.Find(".score").First().Text()
+		tmp[titleMap{12, "Score"}] = score.Find(".score").First().Text()
 		node := doc.Find(`meta[itemprop='ratingCount']`)
 		v, _ := node.Attr("content")
-		tmp[TitleMap{13, "Votes"}] = v
+		tmp[titleMap{13, "Votes"}] = v
 	}
 
-	tmp[TitleMap{14, "Developer"}] = TrimSpace((doc.Find(`div[itemprop='author']`).Find(".primary").Text()))
-	tmp[TitleMap{15, "What's New"}] = doc.Find(".whatsnew .recent-change").Text()
+	tmp[titleMap{14, "Developer"}] = str.TrimSpace((doc.Find(`div[itemprop='author']`).Find(".primary").Text()))
+	tmp[titleMap{15, "What's New"}] = doc.Find(".whatsnew .recent-change").Text()
 
-	tmp[TitleMap{16, "Description"}] = doc.Find(`div[itemprop='description']`).First().Text()
+	tmp[titleMap{16, "Description"}] = doc.Find(`div[itemprop='description']`).First().Text()
 
-	tmp[TitleMap{17, "App Id"}] = pkgName
-	tmp[TitleMap{18, "Icon Url"}], _ = doc.Find(".cover-image").Attr("src")
+	tmp[titleMap{17, "App Id"}] = pkgName
+	tmp[titleMap{18, "Icon Url"}], _ = doc.Find(".cover-image").Attr("src")
 
 	// Should we make slice or just an string ?
-	imgSlice := make([]string, 0)
+	var imgSlice []string
 	doc.Find(".full-screenshot").Each(func(i int, s *goquery.Selection) {
 		fsLinks, _ := s.Attr("src")
 		imgSlice = append(imgSlice, fsLinks)
 	})
 
 	for _, imgSliceLinks := range imgSlice {
-		tmp[TitleMap{19, "Full Screenshot"}] += fmt.Sprintf("%s\n", imgSliceLinks)
+		tmp[titleMap{19, "Full Screenshot"}] += fmt.Sprintf("%s\n", imgSliceLinks)
 	}
 
-	tmp[TitleMap{20, "Market Url"}] = marketUrl(pkgName)
+	tmp[titleMap{20, "Market Url"}] = marketURL(pkgName)
 
 	doc.Find(".recommendation").Find(".rec-cluster").Each(func(i int, recommended *goquery.Selection) {
-		header := TrimSpace(recommended.Find(".heading").First().Text())
+		header := str.TrimSpace(recommended.Find(".heading").First().Text())
 		if header == "Similar" {
 			recommended.Find(".card").Each(func(j int, card *goquery.Selection) {
 				similarAppIds, _ := card.Attr("data-docid")
-				tmp[TitleMap{21, "Related App"}] += fmt.Sprintf("%s\n", similarAppIds)
+				tmp[titleMap{21, "Related App"}] += fmt.Sprintf("%s\n", similarAppIds)
 			})
 		} else {
 			recommended.Find(".card").Each(func(j int, card *goquery.Selection) {
 				similarAppIds, _ := card.Attr("data-docid")
-				tmp[TitleMap{22, "More from Developer"}] += fmt.Sprintf("%s\n", similarAppIds)
+				tmp[titleMap{22, "More from Developer"}] += fmt.Sprintf("%s\n", similarAppIds)
 			})
 		}
 	})
 
 	doc.Find(".play-action-container").Each(func(i int, node *goquery.Selection) {
 		url, _ := node.Attr("data-video-url")
-		videoId := Split(Split(url, "embed/")[1], "?")[0]
+		videoID := str.Split(str.Split(url, "embed/")[1], "?")[0]
 		if len(url) > 0 {
-			tmp[TitleMap{23, "YouTube Url"}] = fmt.Sprintf("%s%s", baseYouTubeUrl, videoId)
+			tmp[titleMap{23, "YouTube Url"}] = fmt.Sprintf("%s%s", baseYouTubeURL, videoID)
 		}
 	})
 
@@ -163,12 +163,12 @@ func GetData(pkgName string) {
 
 	for _, k := range keys {
 		var rows string
-		rows = fmt.Sprintf("%s %s | %s\n", k.Title, buffer(k.Title), TrimSpace(tmp[k]))
+		rows = fmt.Sprintf("%s %s | %s\n", k.Title, buffer(k.Title), str.TrimSpace(tmp[k]))
 		fmt.Printf(rows)
 	}
 }
 
-func marketUrl(pkgName string) string {
+func marketURL(pkgName string) string {
 	return fmt.Sprintf("%s%s&hl=en", baseString, pkgName)
 }
 
@@ -179,25 +179,25 @@ func buffer(msg string) string {
 	length = length - len(msg) - 1
 
 	if length > 0 {
-		ret = Repeat(" ", length)
+		ret = str.Repeat(" ", length)
 	}
 
 	return ret
 }
 
-type ByIndex []TitleMap
+type byIndex []titleMap
 
-func (a ByIndex) Len() int           { return len(a) }
-func (a ByIndex) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
-func (a ByIndex) Less(i, j int) bool { return a[i].Index < a[j].Index }
+func (a byIndex) Len() int           { return len(a) }
+func (a byIndex) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a byIndex) Less(i, j int) bool { return a[i].Index < a[j].Index }
 
-func PanicIf(err error) {
+func panicIf(err error) {
 	if err != nil {
 		panic(err)
 	}
 }
 
-type TitleMap struct {
+type titleMap struct {
 	Index int
 	Title string
 }
