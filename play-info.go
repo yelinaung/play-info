@@ -56,14 +56,14 @@ func getData(pkgName string) {
 		panicIf(err)
 	}
 
-	tmp := make(map[TitleMap]string)
+	tmp := make(map[titleMap]string)
 
-	tmp[TitleMap{1, "Title"}] = doc.Find(`div[itemprop='name']`).First().Text()
-	tmp[TitleMap{2, "Category"}] = str.TrimSpace(doc.Find(".category").First().Text())
+	tmp[titleMap{1, "Title"}] = doc.Find(`div[itemprop='name']`).First().Text()
+	tmp[titleMap{2, "Category"}] = str.TrimSpace(doc.Find(".category").First().Text())
 
 	price := str.TrimSpace(doc.Find(".price").First().Text())
 	if price == "Install" {
-		tmp[TitleMap{3, "Price"}] = "Free"
+		tmp[titleMap{3, "Price"}] = "Free"
 	} else {
 		tmp[titleMap{3, "Price"}] = str.TrimSpace(doc.Find(".price").First().Text())
 	}
@@ -152,7 +152,7 @@ func getData(pkgName string) {
 	// Go iteration order is randomzies
 	// https://blog.golang.org/go-maps-in-action#TOC_7.
 
-	var keys ByIndex
+	var keys byIndex
 
 	for k := range tmp {
 		keys = append(keys, k)
