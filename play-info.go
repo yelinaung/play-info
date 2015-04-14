@@ -13,7 +13,7 @@ import (
 var baseString = "https://play.google.com/store/apps/details?id="
 
 // for my own
-const debug = true
+const debug = false
 
 var divider = fmt.Sprintf(ansi.Color(Repeat("-", 56)+"\n", "yellow"))
 
@@ -110,6 +110,7 @@ func GetData(pkgName string) {
 	tmp[TitleMap{16, "Description"}] = doc.Find(`div[itemprop='description']`).First().Text()
 
 	tmp[TitleMap{17, "App Id"}] = pkgName
+	tmp[TitleMap{18, "Icon Url"}], _ = doc.Find(".cover-image").Attr("src")
 
 	// Go iteration order is randomzies
 	// https://blog.golang.org/go-maps-in-action#TOC_7.
