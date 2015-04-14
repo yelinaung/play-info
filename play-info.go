@@ -118,11 +118,28 @@ func GetData(pkgName string) {
 		fsLinks, _ := s.Attr("src")
 		imgSlice = append(imgSlice, fsLinks)
 	})
+
 	for _, imgSliceLinks := range imgSlice {
 		tmp[TitleMap{19, "Full Screenshot"}] += fmt.Sprintf("%s\n", imgSliceLinks)
 	}
 
 	tmp[TitleMap{20, "Market Url"}] = marketUrl(pkgName)
+
+	doc.Find(".recommendation").Find(".rec-cluster").Each(func(i int, recommended *goquery.Selection) {
+		header := TrimSpace(recommended.Find(".heading").First().Text())
+		if header == "Similar" {
+			recommended.Find(".card").Each(func(j int, card *goquery.Selection) {
+				similarAppIds, _ := card.Attr("data-docid")
+				tmp[TitleMap{21, "Related App"}] += fmt.Sprintf("%s\n", similarAppIds)
+			})
+		} else {
+			recommended.Find(".card").Each(func(j int, card *goquery.Selection) {
+				similarAppIds, _ := card.Attr("data-docid")
+				tmp[TitleMap{22, "More from Developer"}] += fmt.Sprintf("%s\n", similarAppIds)
+			})
+		}
+	})
+
 	// Go iteration order is randomzies
 	// https://blog.golang.org/go-maps-in-action#TOC_7.
 
@@ -135,11 +152,11 @@ func GetData(pkgName string) {
 	// sort the keys
 	sort.Sort(keys)
 
-	for _, k := range keys {
-		var rows string
-		rows = fmt.Sprintf("%s %s | %s\n", k.Title, buffer(k.Title), TrimSpace(tmp[k]))
-		fmt.Printf(rows)
-	}
+	// for _, k := range keys {
+	// 	var rows string
+	// 	rows = fmt.Sprintf("%s %s | %s\n", k.Title, buffer(k.Title), TrimSpace(tmp[k]))
+	// 	fmt.Printf(rows)
+	// }
 }
 
 func marketUrl(pkgName string) string {
