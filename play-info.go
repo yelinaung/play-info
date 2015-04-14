@@ -11,6 +11,7 @@ import (
 )
 
 var baseString = "https://play.google.com/store/apps/details?id="
+var baseYouTubeUrl = "https://www.youtube.com/watch?v="
 
 // for my own
 const debug = false
@@ -142,8 +143,9 @@ func GetData(pkgName string) {
 
 	doc.Find(".play-action-container").Each(func(i int, node *goquery.Selection) {
 		url, _ := node.Attr("data-video-url")
+		videoId := Split(Split(url, "embed/")[1], "?")[0]
 		if len(url) > 0 {
-			tmp[TitleMap{23, "YouTube Url"}] = url
+			tmp[TitleMap{23, "YouTube Url"}] = fmt.Sprintf("%s%s", baseYouTubeUrl, videoId)
 		}
 	})
 
