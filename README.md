@@ -24,7 +24,7 @@ $ go run play-info.go "com.yelinaung.programmerexcuses"
 TODO
 -----
 
-- [ ] More result attributes
+- [x] More result attributes
 - [ ] Homebrew formula
 - [ ] Fuzzy Search. e.g `gmail`
 
