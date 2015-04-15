@@ -1,3 +1,4 @@
 # ignore the local .html files
 *.html
 .goxc.json
+play-info
